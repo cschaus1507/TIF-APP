@@ -1,0 +1,881 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Optimizing Resources to Address Food Insecurity</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A student-facing math app using ratios and proportions to explore solutions to food insecurity." />
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-soft: #eef2ff;
+      --accent: #16a34a;
+      --bg: #f3f4f6;
+      --card: #ffffff;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #e0f2fe, #f3f4f6 40%);
+      color: var(--text-main);
+    }
+
+    .app-shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 2.5rem;
+    }
+
+    header {
+      background: linear-gradient(135deg, #4f46e5, #16a34a);
+      color: white;
+      border-radius: 1.25rem;
+      padding: 1.5rem 1.75rem;
+      box-shadow: 0 20px 35px rgba(15, 23, 42, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      top: -40px;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(255,255,255,0.4), transparent 60%);
+      opacity: 0.9;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 3vw, 2.1rem);
+      letter-spacing: 0.03em;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+      max-width: 620px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .tagline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.9rem;
+      padding: 0.2rem 0.75rem;
+      background: rgba(15,23,42,0.16);
+      border-radius: 999px;
+      font-size: 0.8rem;
+    }
+
+    .tagline span.icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.2);
+      font-size: 0.9rem;
+    }
+
+    main {
+      margin-top: 1.5rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 1rem;
+      padding: 1rem 1.1rem;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .card h2 {
+      margin: 0 0 0.25rem;
+      font-size: 1.1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .card h3 {
+      margin: 0 0 0.2rem;
+      font-size: 0.98rem;
+    }
+
+    .card p {
+      margin: 0.2rem 0 0.4rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: #312e81;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-top: 0.35rem;
+    }
+
+    .section-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 0.14rem;
+    }
+
+    .scenario-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.5rem 0 0.75rem;
+    }
+
+    .scenario-btn {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.8rem;
+      background: white;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--text-muted);
+      transition: all 0.15s ease-out;
+    }
+
+    .scenario-btn span.badge {
+      font-size: 0.7rem;
+      padding: 0.05rem 0.4rem;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: #3730a3;
+    }
+
+    .scenario-btn.active {
+      background: #4f46e5;
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+    }
+
+    .scenario-detail {
+      border-radius: 0.75rem;
+      background: #f9fafb;
+      border: 1px dashed #d1d5db;
+      padding: 0.75rem 0.8rem;
+      font-size: 0.86rem;
+      line-height: 1.5;
+      color: #374151;
+    }
+
+    .scenario-detail strong {
+      color: #111827;
+    }
+
+    .scenario-prompts {
+      margin-top: 0.7rem;
+      padding-top: 0.6rem;
+      border-top: 1px solid #e5e7eb;
+      font-size: 0.85rem;
+    }
+
+    .scenario-prompts ul {
+      padding-left: 1.1rem;
+      margin: 0.3rem 0 0;
+    }
+
+    .scenario-prompts li {
+      margin-bottom: 0.2rem;
+    }
+
+    .calc-group {
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      padding: 0.65rem 0.7rem 0.7rem;
+      margin-top: 0.55rem;
+    }
+
+    .calc-group-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .calc-group-header h3 {
+      margin: 0;
+      font-size: 0.93rem;
+    }
+
+    .calc-group-header span {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.55rem;
+      margin-top: 0.4rem;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: #4b5563;
+      display: block;
+      margin-bottom: 0.12rem;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 0.4rem 0.45rem;
+      border-radius: 0.6rem;
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+      outline: none;
+      background: white;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.3);
+    }
+
+    button.primary {
+      margin-top: 0.45rem;
+      padding: 0.45rem 0.8rem;
+      border-radius: 0.8rem;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 8px 18px rgba(79, 70, 229, 0.4);
+      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, background 0.08s ease-out;
+    }
+
+    button.primary:hover {
+      background: #4338ca;
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(79, 70, 229, 0.45);
+    }
+
+    button.secondary {
+      margin-top: 0.3rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 0.4rem;
+      padding: 0.45rem 0.55rem;
+      border-radius: 0.6rem;
+      background: #ecfdf5;
+      border: 1px solid #bbf7d0;
+      font-size: 0.8rem;
+      color: #064e3b;
+    }
+
+    .result.error {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #7f1d1d;
+    }
+
+    .ratio-steps {
+      margin-top: 0.35rem;
+      font-size: 0.76rem;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+
+    .ratio-steps code {
+      background: #e5e7eb;
+      border-radius: 999px;
+      padding: 0.08rem 0.4rem;
+      font-size: 0.75rem;
+    }
+
+    .reflection-list {
+      margin: 0.4rem 0 0.2rem;
+      padding-left: 1.1rem;
+      font-size: 0.86rem;
+      color: #374151;
+    }
+
+    .reflection-list li {
+      margin-bottom: 0.2rem;
+    }
+
+    .note {
+      margin-top: 0.35rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    footer {
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: #6b7280;
+      text-align: center;
+    }
+
+    .badge-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: #fef9c3;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid #facc15;
+      font-size: 0.75rem;
+      margin-top: 0.2rem;
+    }
+
+    .badge-inline span {
+      font-size: 0.8rem;
+    }
+
+    .small-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 0.35rem;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 1.25rem 1.35rem;
+      }
+      .small-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <h1>Optimizing Resources to Address Food Insecurity</h1>
+      <p>
+        This student app helps you use ratios and proportions to make decisions about how to share limited food
+        resources fairly and efficiently in your community. Each tool connects math to real problems around
+        food access, distribution, and sustainability.
+      </p>
+      <div class="tagline">
+        <span class="icon">✏️</span>
+        <span>10th Grade • 5-Day Unit • Math for Social Change</span>
+      </div>
+    </header>
+
+    <main>
+      <div class="layout">
+        <!-- LEFT: Unit & Scenario Explorer -->
+        <section class="card">
+          <div class="section-title">Unit Overview</div>
+          <h2>Math as a Tool for Social Change</h2>
+          <p>
+            Across this five-day unit, you’ll explore how ratios and proportions can help communities plan food
+            pantries, mobile markets, and gardens. You’ll work with realistic numbers, analyze what’s fair, and make
+            recommendations that could actually be used to support families.
+          </p>
+          <div class="pill">Goal: Use math to advocate for equitable food distribution</div>
+
+          <div style="margin-top: 0.8rem;">
+            <div class="section-title">Scenario Explorer</div>
+            <h3>Choose a real-world situation to focus on</h3>
+            <p>Pick a scenario. Then use the calculators on the right to test ideas and build a data-driven plan.</p>
+
+            <div class="scenario-selector">
+              <button class="scenario-btn active" data-scenario="pantry">
+                School Pantry
+                <span class="badge">Day 1–2</span>
+              </button>
+              <button class="scenario-btn" data-scenario="mobile">
+                Mobile Market
+                <span class="badge">Day 3</span>
+              </button>
+              <button class="scenario-btn" data-scenario="garden">
+                Community Garden
+                <span class="badge">Day 4–5</span>
+              </button>
+            </div>
+
+            <div id="scenario-detail" class="scenario-detail">
+              <!-- filled by JS -->
+            </div>
+
+            <div class="scenario-prompts">
+              <strong>Suggested steps:</strong>
+              <ul id="scenario-prompts-list">
+                <!-- filled by JS -->
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT: Ratio & Proportion Labs -->
+        <section class="card">
+          <div class="section-title">Ratio & Proportion Labs</div>
+          <h2>Interactive Planning Tools</h2>
+          <p>
+            Use these mini-labs to model your scenario. Change the numbers, compare options, and record your decisions
+            in your notes or project organizer.
+          </p>
+
+          <!-- Lab 1: Pantry Planning -->
+          <div class="calc-group">
+            <div class="calc-group-header">
+              <h3>Lab 1: Pantry Planning</h3>
+              <span>How many meals can we provide?</span>
+            </div>
+            <p>
+              Imagine your school or local pantry is serving families over a certain number of days. Use ratios to plan
+              how many meals and food boxes are needed.
+            </p>
+            <div class="field-row">
+              <div>
+                <label for="families">Number of families</label>
+                <input type="number" id="families" min="0" placeholder="e.g. 45">
+              </div>
+              <div>
+                <label for="mealsPerDay">Meals per family per day</label>
+                <input type="number" id="mealsPerDay" min="0" placeholder="e.g. 2">
+              </div>
+              <div>
+                <label for="days">Number of days</label>
+                <input type="number" id="days" min="0" placeholder="e.g. 7">
+              </div>
+              <div>
+                <label for="mealsPerBox">Meals per food box</label>
+                <input type="number" id="mealsPerBox" min="1" value="4">
+              </div>
+            </div>
+            <button class="primary" id="btnPantry">
+              ➗ Calculate pantry needs
+            </button>
+            <div id="pantryResult" class="result" style="display:none;"></div>
+            <div id="pantrySteps" class="ratio-steps" style="display:none;"></div>
+          </div>
+
+          <!-- Lab 2: Cost Comparison -->
+          <div class="calc-group">
+            <div class="calc-group-header">
+              <h3>Lab 2: Cost Comparison</h3>
+              <span>Which option feeds more people per dollar?</span>
+            </div>
+            <p>
+              You’re comparing two foods to include in a donation or pantry. Which one gives more servings for the cost?
+            </p>
+            <div class="field-row">
+              <div>
+                <label for="costA">Option A – cost ($)</label>
+                <input type="number" id="costA" min="0" step="0.01" placeholder="e.g. 18.50">
+              </div>
+              <div>
+                <label for="servingsA">Option A – servings</label>
+                <input type="number" id="servingsA" min="0" placeholder="e.g. 32">
+              </div>
+              <div>
+                <label for="costB">Option B – cost ($)</label>
+                <input type="number" id="costB" min="0" step="0.01" placeholder="e.g. 15.00">
+              </div>
+              <div>
+                <label for="servingsB">Option B – servings</label>
+                <input type="number" id="servingsB" min="0" placeholder="e.g. 20">
+              </div>
+            </div>
+            <button class="primary" id="btnCost">
+              📊 Compare cost per serving
+            </button>
+            <div id="costResult" class="result" style="display:none;"></div>
+            <div id="costSteps" class="ratio-steps" style="display:none;"></div>
+          </div>
+
+          <!-- Lab 3: Distribution Allocator -->
+          <div class="calc-group">
+            <div class="calc-group-header">
+              <h3>Lab 3: Distribution Allocator</h3>
+              <span>How can we share fairly across neighborhoods?</span>
+            </div>
+            <p>
+              You have a total number of food boxes and three neighborhoods with different populations. Use proportions
+              to distribute boxes fairly based on how many people live in each area.
+            </p>
+            <div class="field-row">
+              <div>
+                <label for="totalBoxes">Total food boxes available</label>
+                <input type="number" id="totalBoxes" min="0" placeholder="e.g. 120">
+              </div>
+            </div>
+            <div class="small-grid" style="margin-top:0.45rem;">
+              <div>
+                <strong style="font-size:0.83rem;">Neighborhood A</strong>
+                <div class="field-row">
+                  <div>
+                    <label for="popA">Population</label>
+                    <input type="number" id="popA" min="0" placeholder="e.g. 400">
+                  </div>
+                </div>
+              </div>
+              <div>
+                <strong style="font-size:0.83rem;">Neighborhood B</strong>
+                <div class="field-row">
+                  <div>
+                    <label for="popB">Population</label>
+                    <input type="number" id="popB" min="0" placeholder="e.g. 250">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field-row" style="margin-top:0.35rem;">
+              <div>
+                <strong style="font-size:0.83rem;">Neighborhood C</strong>
+                <label for="popC">Population</label>
+                <input type="number" id="popC" min="0" placeholder="e.g. 350">
+              </div>
+            </div>
+
+            <button class="primary" id="btnDist">
+              ⚖️ Allocate boxes proportionally
+            </button>
+            <div id="distResult" class="result" style="display:none;"></div>
+            <div id="distSteps" class="ratio-steps" style="display:none;"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Reflection / Exit Ticket -->
+      <section class="card">
+        <div class="section-title">Reflection & Advocacy</div>
+        <h2>Turn Your Math Into an Argument for Change</h2>
+        <p>
+          Data alone doesn’t change the world—people do. Use your calculations to create a short written, visual, or
+          spoken argument about how your community should use its food resources.
+        </p>
+        <ul class="reflection-list">
+          <li>Which scenario did you focus on (pantry, mobile market, or garden)?</li>
+          <li>What ratios or proportions were most useful in your planning?</li>
+          <li>How did your decisions try to balance fairness and efficiency?</li>
+          <li>If you could collect one more piece of data to improve your plan, what would it be and why?</li>
+          <li>How might you share your findings with school or community leaders?</li>
+        </ul>
+        <div class="badge-inline">
+          <span>💡</span>
+          <span>Teacher idea: Use this as a daily exit ticket or final project prompt.</span>
+        </div>
+        <p class="note">
+          This tool uses made-up numbers. For a more powerful project, work with your teacher to plug in data from your
+          own community or school food programs.
+        </p>
+      </section>
+
+      <footer>
+        Built for a 10th-grade unit on ratios, proportions, and food insecurity. Customize the scenarios and numbers to match your community.
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Scenario Data ----------
+    const scenarios = {
+      pantry: {
+        title: "School Food Pantry",
+        description: `
+          Your school is running a weekly food pantry for families. The pantry wants to make sure each family receives
+          enough meals for the week, but donations and storage space are limited.
+        `,
+        detail: `
+          <strong>Big question:</strong> How many boxes and meals should the pantry prepare each week so that families
+          get consistent support without wasting food?<br><br>
+          You’ll use ratios like <em>meals per family</em> and <em>boxes per meal</em> to plan what the pantry needs to
+          order, store, and distribute.
+        `,
+        prompts: [
+          "If the number of families doubles, how should your plan change to keep things fair?",
+          "How many extra boxes would you recommend as a ‘buffer’ for new families?",
+          "How could you communicate your plan to volunteers so they understand why the numbers matter?"
+        ]
+      },
+      mobile: {
+        title: "Mobile Market Route",
+        description: `
+          A local nonprofit is sending a mobile food market to different neighborhoods once a week. Each stop has
+          different levels of need.
+        `,
+        detail: `
+          <strong>Big question:</strong> If the truck can only carry a fixed number of boxes, how should they be divided
+          among neighborhoods so that the distribution is proportional to the number of families in each area?<br><br>
+          You’ll use population-based ratios to design a fair route.
+        `,
+        prompts: [
+          "How does changing one neighborhood’s population affect the boxes each area receives?",
+          "Is proportional distribution always the most fair? Why or why not?",
+          "What non-math factors (like transportation or refrigeration) might affect your plan?"
+        ]
+      },
+      garden: {
+        title: "Community Garden Harvest",
+        description: `
+          Your community garden harvests vegetables once a week and donates them to different sites: a senior center, a
+          school pantry, and a shelter.
+        `,
+        detail: `
+          <strong>Big question:</strong> How can the harvest be divided so that each site gets an amount that matches the
+          number of people it serves, while also reducing waste?<br><br>
+          You’ll use ratios to connect <em>pounds of food</em> to <em>servings per person</em>.
+        `,
+        prompts: [
+          "If the garden harvest increases by 25%, how does that change each site’s share?",
+          "How could you use ratios to plan for seasonal changes (more harvest in summer, less in winter)?",
+          "How might your plan change if one site can’t store fresh produce for very long?"
+        ]
+      }
+    };
+
+    const scenarioDetailEl = document.getElementById("scenario-detail");
+    const scenarioPromptsListEl = document.getElementById("scenario-prompts-list");
+    const scenarioButtons = document.querySelectorAll(".scenario-btn");
+
+    function renderScenario(key) {
+      const s = scenarios[key];
+      if (!s) return;
+      scenarioDetailEl.innerHTML = `
+        <strong>${s.title}</strong><br>
+        ${s.description}<br><br>
+        ${s.detail}
+      `;
+      scenarioPromptsListEl.innerHTML = "";
+      s.prompts.forEach(prompt => {
+        const li = document.createElement("li");
+        li.textContent = prompt;
+        scenarioPromptsListEl.appendChild(li);
+      });
+    }
+
+    scenarioButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        scenarioButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const key = btn.getAttribute("data-scenario");
+        renderScenario(key);
+      });
+    });
+
+    // Initialize default scenario
+    renderScenario("pantry");
+
+    // ---------- Lab 1: Pantry Planning ----------
+    const btnPantry = document.getElementById("btnPantry");
+    const pantryResult = document.getElementById("pantryResult");
+    const pantrySteps = document.getElementById("pantrySteps");
+
+    btnPantry.addEventListener("click", () => {
+      const families = Number(document.getElementById("families").value);
+      const mealsPerDay = Number(document.getElementById("mealsPerDay").value);
+      const days = Number(document.getElementById("days").value);
+      const mealsPerBox = Number(document.getElementById("mealsPerBox").value || 0);
+
+      if (!families || !mealsPerDay || !days || !mealsPerBox || families < 0 || mealsPerDay < 0 || days < 0 || mealsPerBox <= 0) {
+        pantryResult.style.display = "block";
+        pantryResult.classList.add("error");
+        pantryResult.textContent = "Please enter positive numbers for all fields.";
+        pantrySteps.style.display = "none";
+        return;
+      }
+
+      const totalMeals = families * mealsPerDay * days;
+      const boxesNeededExact = totalMeals / mealsPerBox;
+      const boxesNeeded = Math.ceil(boxesNeededExact);
+
+      pantryResult.style.display = "block";
+      pantryResult.classList.remove("error");
+      pantryResult.innerHTML = `
+        You would need about <strong>${totalMeals.toLocaleString()}</strong> total meals. With
+        <strong>${mealsPerBox}</strong> meals in each box, plan for
+        <strong>${boxesNeeded.toLocaleString()} food boxes</strong> over this time period.
+      `;
+
+      pantrySteps.style.display = "block";
+      pantrySteps.innerHTML = `
+        <strong>Ratio reasoning:</strong><br>
+        1. Start with the ratio <code>${mealsPerDay}</code> meals : <code>1</code> family per day.<br>
+        2. Multiply by <code>${families}</code> families → <code>${families} × ${mealsPerDay} = ${(families * mealsPerDay).toLocaleString()}</code> meals per day.<br>
+        3. Multiply by <code>${days}</code> days → <code>${families} × ${mealsPerDay} × ${days} = ${totalMeals.toLocaleString()}</code> total meals.<br>
+        4. Use the unit rate <code>${mealsPerBox}</code> meals : <code>1</code> box to get
+           <code>${totalMeals.toLocaleString()} ÷ ${mealsPerBox} ≈ ${boxesNeededExact.toFixed(2)}</code> boxes,
+           so you round up to <strong>${boxesNeeded}</strong> boxes to cover everyone.
+      `;
+    });
+
+    // ---------- Lab 2: Cost Comparison ----------
+    const btnCost = document.getElementById("btnCost");
+    const costResult = document.getElementById("costResult");
+    const costSteps = document.getElementById("costSteps");
+
+    btnCost.addEventListener("click", () => {
+      const costA = Number(document.getElementById("costA").value);
+      const servingsA = Number(document.getElementById("servingsA").value);
+      const costB = Number(document.getElementById("costB").value);
+      const servingsB = Number(document.getElementById("servingsB").value);
+
+      if (!costA || !servingsA || !costB || !servingsB || costA < 0 || costB < 0 || servingsA <= 0 || servingsB <= 0) {
+        costResult.style.display = "block";
+        costResult.classList.add("error");
+        costResult.textContent = "Please enter positive numbers for cost and servings for both options.";
+        costSteps.style.display = "none";
+        return;
+      }
+
+      const cpsA = costA / servingsA;
+      const cpsB = costB / servingsB;
+
+      let message;
+      if (cpsA < cpsB) {
+        message = `Option A is more cost-effective, at about <strong>$${cpsA.toFixed(2)}</strong> per serving.`;
+      } else if (cpsB < cpsA) {
+        message = `Option B is more cost-effective, at about <strong>$${cpsB.toFixed(2)}</strong> per serving.`;
+      } else {
+        message = `Both options cost the same per serving: <strong>$${cpsA.toFixed(2)}</strong>.`;
+      }
+
+      costResult.style.display = "block";
+      costResult.classList.remove("error");
+      costResult.innerHTML = message;
+
+      costSteps.style.display = "block";
+      costSteps.innerHTML = `
+        <strong>Unit rate comparison:</strong><br>
+        Option A: <code>$${costA.toFixed(2)} ÷ ${servingsA} = $${cpsA.toFixed(2)}</code> per serving<br>
+        Option B: <code>$${costB.toFixed(2)} ÷ ${servingsB} = $${cpsB.toFixed(2)}</code> per serving<br><br>
+        The option with the <em>smaller</em> cost per serving gives more food for each dollar.
+      `;
+    });
+
+    // ---------- Lab 3: Distribution Allocator ----------
+    const btnDist = document.getElementById("btnDist");
+    const distResult = document.getElementById("distResult");
+    const distSteps = document.getElementById("distSteps");
+
+    btnDist.addEventListener("click", () => {
+      const totalBoxes = Number(document.getElementById("totalBoxes").value);
+      const popA = Number(document.getElementById("popA").value);
+      const popB = Number(document.getElementById("popB").value);
+      const popC = Number(document.getElementById("popC").value);
+
+      if (!totalBoxes || totalBoxes <= 0 || popA < 0 || popB < 0 || popC < 0) {
+        distResult.style.display = "block";
+        distResult.classList.add("error");
+        distResult.textContent = "Please enter a positive total number of boxes and non-negative populations.";
+        distSteps.style.display = "none";
+        return;
+      }
+
+      const totalPop = popA + popB + popC;
+      if (totalPop === 0) {
+        distResult.style.display = "block";
+        distResult.classList.add("error");
+        distResult.textContent = "At least one neighborhood must have a population greater than 0.";
+        distSteps.style.display = "none";
+        return;
+      }
+
+      // Exact proportional allocations
+      const exactA = (popA / totalPop) * totalBoxes;
+      const exactB = (popB / totalPop) * totalBoxes;
+      const exactC = (popC / totalPop) * totalBoxes;
+
+      // Round to nearest whole box and adjust if needed to keep sum = totalBoxes
+      let boxesA = Math.round(exactA);
+      let boxesB = Math.round(exactB);
+      let boxesC = Math.round(exactC);
+
+      let diff = totalBoxes - (boxesA + boxesB + boxesC);
+      // Adjust by giving or taking from the area with the largest population
+      const pops = [{ name: "A", pop: popA }, { name: "B", pop: popB }, { name: "C", pop: popC }];
+      pops.sort((x, y) => y.pop - x.pop);
+      while (diff !== 0) {
+        const target = pops[0].name;
+        if (diff > 0) {
+          if (target === "A") boxesA++;
+          if (target === "B") boxesB++;
+          if (target === "C") boxesC++;
+          diff--;
+        } else {
+          if (target === "A" && boxesA > 0) { boxesA--; diff++; }
+          else if (target === "B" && boxesB > 0) { boxesB--; diff++; }
+          else if (target === "C" && boxesC > 0) { boxesC--; diff++; }
+          else break;
+        }
+      }
+
+      distResult.style.display = "block";
+      distResult.classList.remove("error");
+      distResult.innerHTML = `
+        A fair proportional plan would give approximately:<br>
+        • <strong>Neighborhood A:</strong> ${boxesA} boxes<br>
+        • <strong>Neighborhood B:</strong> ${boxesB} boxes<br>
+        • <strong>Neighborhood C:</strong> ${boxesC} boxes
+      `;
+
+      distSteps.style.display = "block";
+      distSteps.innerHTML = `
+        <strong>Proportion reasoning:</strong><br>
+        1. Total population: <code>${popA} + ${popB} + ${popC} = ${totalPop}</code><br>
+        2. Use the ratio <code>boxes : people = ${totalBoxes} : ${totalPop}</code>.<br>
+        3. Multiply this ratio by each neighborhood’s population:<br>
+        &nbsp;&nbsp;A: <code>(${popA} ÷ ${totalPop}) × ${totalBoxes} ≈ ${exactA.toFixed(2)}</code> boxes<br>
+        &nbsp;&nbsp;B: <code>(${popB} ÷ ${totalPop}) × ${totalBoxes} ≈ ${exactB.toFixed(2)}</code> boxes<br>
+        &nbsp;&nbsp;C: <code>(${popC} ÷ ${totalPop}) × ${totalBoxes} ≈ ${exactC.toFixed(2)}</code> boxes<br>
+        4. Round to whole boxes and make small adjustments so the total stays at <code>${totalBoxes}</code> boxes.
+      `;
+    });
+  </script>
+</body>
+</html>
